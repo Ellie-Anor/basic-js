@@ -20,14 +20,47 @@ const { NotImplementedError } = require('../lib');
  *
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  constructor(direct = true) {
+    this.direct = direct;
   }
 
-  decrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
+  _process(text, key, decrypt) {
+    if (text === undefined || key === undefined) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    const message = String(text).toUpperCase();
+    const cleanKey = String(key).toUpperCase().replace(/[^A-Z]/g, '');
+
+    // Если ключ пуст после очистки — нечего применять
+    if (cleanKey.length === 0) {
+      return this.direct ? message : message.split('').reverse().join('');
+    }
+
+    let result = '';
+    let keyIndex = 0;
+
+    for (const ch of message) {
+      if (ch >= 'A' && ch <= 'Z') {
+        const shift = cleanKey.charCodeAt(keyIndex % cleanKey.length) - 65;
+        const base = ch.charCodeAt(0) - 65;
+        const idx = decrypt ? (base - shift + 26) % 26 : (base + shift) % 26;
+        result += String.fromCharCode(idx + 65);
+        keyIndex++;
+      } else {
+        result += ch; // не-буквы остаются как есть и не сдвигают ключ
+      }
+    }
+
+    return this.direct ? result : result.split('').reverse().join('');
+  }
+
+  encrypt(message, key) {
+    return this._process(message, key, false);
+  }
+
+  decrypt(message, key) {
+    return this._process(message, key, true);
   }
 }
 
