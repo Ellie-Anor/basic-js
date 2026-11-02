@@ -11,9 +11,19 @@ const { NotImplementedError } = require('../lib');
  *
  */
 
-function encodeLine(/* str */) {
-  // Remove line below and write your code here
-  throw new NotImplementedError('Not implemented');
+function encodeLine(str) {
+  let result = '';
+  let i = 0;
+  while (i < str.length) {
+    let count = 1;
+    while (i + 1 < str.length && str[i + 1] === str[i]) {
+      count++;
+      i++;
+    }
+    result += (count > 1 ? count : '') + str[i];
+    i++;
+  }
+  return result;
 }
 
 module.exports = {
